@@ -1,0 +1,15 @@
+version: '3.8'
+services:
+  sea-orm-example-db:
+    image: postgres:13
+    container_name: sea-orm-example-db
+    environment:
+      POSTGRES_USER: user
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: sea-orm-example
+      TZ: Asia/Tokyo
+    ports:
+      - "5434:5432"
+    #保存する場合
+    # volumes:
+    #   - postgres_data:/var/lib/postgresql/data
