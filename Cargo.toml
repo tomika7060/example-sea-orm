@@ -10,11 +10,17 @@ sea-orm = { version = "0.12.15", features = [
     "sqlx-postgres",
     "runtime-tokio-rustls",
     "macros",
+    "debug-print"
 ] }
 async-trait = "0.1.79"
+tokio = { version = "1", features = ["full"] }
 serde = { version = "1.0", features = ["derive"] }
 actix-web = "4.0"
 serde_json = "1.0"
+dotenv = "0.15.0"
+env_logger = "0.11.3"
+log = "0.4.21"
+anyhow = "1.0.86"
 
 [workspace]
 members = [
