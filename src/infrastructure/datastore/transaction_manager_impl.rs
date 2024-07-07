@@ -24,7 +24,7 @@ impl TransactionManagerImpl {
 
 #[async_trait]
 impl TransactionManager for TransactionManagerImpl {
-    async fn begin(&mut self) -> Result<()> {
+    async fn begin(&self) -> Result<()> {
         let mut tx_guard = self.transaction.lock().await;
         if tx_guard.is_none() {
             let transaction = self.con.begin().await.map_err(|e| {
@@ -40,7 +40,7 @@ impl TransactionManager for TransactionManagerImpl {
         }
     }
 
-    async fn commit(&mut self) -> Result<()> {
+    async fn commit(&self) -> Result<()> {
         let mut tx_guard = self.transaction.lock().await;
         if let Some(transaction) = tx_guard.take() {
             transaction.commit().await.map_err(|e| {
@@ -54,7 +54,7 @@ impl TransactionManager for TransactionManagerImpl {
         }
     }
 
-    async fn rollback(&mut self) -> Result<()> {
+    async fn rollback(&self) -> Result<()> {
         let mut tx_guard = self.transaction.lock().await;
         if let Some(transaction) = tx_guard.take() {
             transaction.rollback().await.map_err(|e| {

@@ -3,7 +3,7 @@ use async_trait::async_trait;
 
 #[async_trait]
 pub trait TransactionManager {
-    async fn begin(&mut self) -> Result<()>;
-    async fn commit(&mut self) -> Result<()>;
-    async fn rollback(&mut self) -> Result<()>;
+    async fn begin(&self) -> Result<()>;
+    async fn commit(&self) -> Result<()>;
+    async fn rollback(&self) -> Result<()>;
 }
