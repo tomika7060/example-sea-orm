@@ -48,18 +48,16 @@ where
     async fn execute(&self, post: NewPost) -> Result<Post> {
         self.transaction_manager.lock().await.begin().await?;
 
-        let res = self.post_repository.create(post).await;
-
-        match res.as_ref().map_err(|e| e.to_string()) {
-            Ok(_) => {
-                self.transaction_manager.lock().await.commit().await?;
-            }
+        let res = match self.post_repository.create(post).await {
+            Ok(post) => post,
             Err(e) => {
                 self.transaction_manager.lock().await.rollback().await?;
                 return Err(anyhow::anyhow!(e));
             }
-        }
+        };
 
-        res
+        self.transaction_manager.lock().await.commit().await?;
+
+        Ok(res)
     }
 }
