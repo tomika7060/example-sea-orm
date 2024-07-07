@@ -9,7 +9,7 @@ services:
       POSTGRES_DB: sea-orm-example
       TZ: Asia/Tokyo
     ports:
-      - "5434:5432"
+      - "5432:5432"
     #保存する場合
     # volumes:
     #   - postgres_data:/var/lib/postgresql/data
