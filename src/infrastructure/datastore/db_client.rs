@@ -1,13 +1,8 @@
 use anyhow::Result;
 use async_trait::async_trait;
-use log::{error, info};
-use sea_orm::{
-    ConnectOptions, Database, DatabaseConnection, DatabaseTransaction, TransactionTrait,
-};
+use log::error;
+use sea_orm::{ConnectOptions, Database, DatabaseConnection};
 use std::{env, sync::Arc, time::Duration};
-use tokio::sync::Mutex;
-
-use crate::application::transaction_manager::TransactionManager;
 
 #[async_trait]
 pub trait DBClient {
@@ -15,12 +10,7 @@ pub trait DBClient {
 }
 
 pub struct DBClientImpl {
-    pub con: Arc<DatabaseConnection>,
-}
-
-pub struct TransactionManagerImpl {
-    pub con: Arc<DatabaseConnection>,
-    transaction: Mutex<Option<DatabaseTransaction>>,
+    con: Arc<DatabaseConnection>,
 }
 
 impl DBClientImpl {
@@ -70,65 +60,9 @@ impl DBClientImpl {
     }
 }
 
-impl TransactionManagerImpl {
-    pub fn new(connection: Arc<DatabaseConnection>) -> Self {
-        Self {
-            con: connection,
-            transaction: Mutex::new(None),
-        }
-    }
-}
-
 #[async_trait]
 impl DBClient for DBClientImpl {
     fn get_connection(&self) -> Arc<DatabaseConnection> {
         self.con.clone()
-    }
-}
-
-#[async_trait]
-impl TransactionManager for TransactionManagerImpl {
-    async fn begin(&mut self) -> Result<()> {
-        let mut tx_guard = self.transaction.lock().await;
-        if tx_guard.is_none() {
-            let transaction = self.con.begin().await.map_err(|e| {
-                error!("Failed to start transaction: {}", e.to_string());
-                e
-            })?;
-
-            info!("Transaction started");
-            *tx_guard = Some(transaction);
-            Ok(())
-        } else {
-            Err(anyhow::anyhow!("Transaction already exists"))
-        }
-    }
-
-    async fn commit(&mut self) -> Result<()> {
-        let mut tx_guard = self.transaction.lock().await;
-        if let Some(transaction) = tx_guard.take() {
-            transaction.commit().await.map_err(|e| {
-                error!("Failed to commit transaction: {}", e.to_string());
-                e
-            })?;
-            info!("Transaction committed");
-            Ok(())
-        } else {
-            Err(anyhow::anyhow!("Transaction already exists"))
-        }
-    }
-
-    async fn rollback(&mut self) -> Result<()> {
-        let mut tx_guard = self.transaction.lock().await;
-        if let Some(transaction) = tx_guard.take() {
-            transaction.rollback().await.map_err(|e| {
-                error!("Failed to rollback transaction: {}", e.to_string());
-                e
-            })?;
-            info!("Transaction rolled back");
-            Ok(())
-        } else {
-            Err(anyhow::anyhow!("Transaction already exists"))
-        }
     }
 }

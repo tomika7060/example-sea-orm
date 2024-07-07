@@ -1,5 +1,5 @@
-use std::sync::Arc;
 use anyhow::Result;
+use std::sync::Arc;
 
 use async_trait::async_trait;
 use sea_orm::{ActiveModelTrait, DatabaseConnection, EntityTrait, Set};
@@ -7,10 +7,9 @@ use sea_orm::{ActiveModelTrait, DatabaseConnection, EntityTrait, Set};
 use crate::domain::entity::new_post::NewPost;
 use crate::domain::{entity::post::Post, repository::post_repository::PostRepository};
 use crate::infrastructure::tables::post;
+use post::ActiveModel as PostActiveModel;
 use post::Entity as PostEntity;
 use post::Model as PostModel;
-use post::ActiveModel as PostActiveModel;
-
 
 pub struct PostRepositoryImpl {
     con: Arc<DatabaseConnection>,
@@ -40,8 +39,11 @@ impl PostRepositoryImpl {
 
 #[async_trait]
 impl PostRepository for PostRepositoryImpl {
-    async fn find_by_id(&self,id:i32) -> Result<Post> {
-        let res = PostEntity::find_by_id(id).one(&*self.con).await.map_err(|e| e)?;
+    async fn find_by_id(&self, id: i32) -> Result<Post> {
+        let res = PostEntity::find_by_id(id)
+            .one(&*self.con)
+            .await
+            .map_err(|e| e)?;
 
         match res {
             Some(post) => Ok(Self::from_entity(post)),
