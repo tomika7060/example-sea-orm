@@ -1,14 +1,12 @@
-use std::sync::Arc;
 use anyhow::Result;
 use async_trait::async_trait;
 use log::{error, info};
-use sea_orm::{DatabaseConnection, DatabaseTransaction};
-use tokio::sync::Mutex;
 use sea_orm::TransactionTrait;
+use sea_orm::{DatabaseConnection, DatabaseTransaction};
+use std::sync::Arc;
+use tokio::sync::Mutex;
 
 use crate::application::transaction_manager::TransactionManager;
-
-
 
 pub struct TransactionManagerImpl {
     con: Arc<DatabaseConnection>,
@@ -23,7 +21,6 @@ impl TransactionManagerImpl {
         }
     }
 }
-
 
 #[async_trait]
 impl TransactionManager for TransactionManagerImpl {

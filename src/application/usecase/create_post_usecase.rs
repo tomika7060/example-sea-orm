@@ -1,11 +1,12 @@
-use std::sync::Arc;
 use anyhow::Result;
+use std::sync::Arc;
 
 use async_trait::async_trait;
 use tokio::sync::Mutex;
 
 use crate::{
-    application::transaction_manager::TransactionManager, domain::{
+    application::transaction_manager::TransactionManager,
+    domain::{
         entity::{new_post::NewPost, post::Post},
         repository::post_repository::PostRepository,
     },
@@ -46,7 +47,6 @@ where
 {
     async fn execute(&self, post: NewPost) -> Result<Post> {
         self.transaction_manager.lock().await.begin().await?;
-
 
         let res = self.post_repository.create(post).await;
 

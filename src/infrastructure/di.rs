@@ -11,7 +11,8 @@ use crate::{
 };
 
 use super::{
-    datastore::{db_client::DBClient, transaction_manager_impl::TransactionManagerImpl}, repository_impl::post_repository_impl::PostRepositoryImpl,
+    datastore::{db_client::DBClient, transaction_manager_impl::TransactionManagerImpl},
+    repository_impl::post_repository_impl::PostRepositoryImpl,
 };
 
 #[async_trait]
